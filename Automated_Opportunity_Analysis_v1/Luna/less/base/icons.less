@@ -1,0 +1,710 @@
+@font-face {
+  font-family: 'IconicFill';
+  src: url('../fonts/iconic_fill/iconic_fill.eot');
+  src: local('IconicFill'),
+     url('../fonts/iconic_fill/iconic_fill.eot?#iefix') format('embedded-opentype'),
+     url('../fonts/iconic_fill/iconic_fill.otf') format('opentype'),
+     url('../fonts/iconic_fill/iconic_fill.ttf') format('truetype'),
+     url('../fonts/iconic_fill/iconic_fill.svg#iconic') format('svg');
+}
+
+@font-face {
+  font-family: 'IconicStroke';
+  src: url('../fonts/iconic_stroke/iconic_stroke.eot');
+  src: local('IconicStroke'),
+     url('../fonts/iconic_stroke/iconic_stroke.eot?#iefix') format('embedded-opentype'),
+     url('../fonts/iconic_stroke/iconic_stroke.otf') format('opentype'),
+     url('../fonts/iconic_stroke/iconic_stroke.ttf') format('truetype'),
+     url('../fonts/iconic_stroke/iconic_stroke.svg#iconic') format('svg');
+}
+
+[class*=iconic] {
+  display: inline-block;
+  font-style: normal;
+}
+
+.iconic {
+  font-family: IconicFill, @base-font-family;
+}
+
+.iconic-stroke {
+  font-family: IconicStroke, @base-font-family;
+}
+
+i {
+  &.aperture:before {
+    content:'\e026';
+  }
+
+  &.aperture-alt:before {
+    content:'\e00c';
+  }
+
+  &.arrow-down:before {
+    content:'\2193';
+  }
+
+  &.arrow-down-alt1:before {
+    content:'\e016';
+  }
+
+  &.arrow-down-alt2:before {
+    content:'\e01a';
+  }
+
+  &.arrow-left:before {
+    content:'\2190';
+  }
+
+  &.arrow-left-alt1:before {
+    content:'\e013';
+  }
+
+  &.arrow-left-alt2:before {
+    content:'\e017';
+  }
+
+  &.arrow-right:before {
+    content:'\2192';
+  }
+
+  &.arrow-right-alt1:before {
+    content:'\e015';
+  }
+
+  &.arrow-right-alt2:before {
+    content:'\e019';
+  }
+
+  &.arrow-up:before {
+    content:'\2191';
+  }
+
+  &.arrow-up-alt1:before {
+    content:'\e014';
+  }
+
+  &.arrow-up-alt2:before {
+    content:'\e018';
+  }
+
+  &.article:before {
+    content:'\e053';
+  }
+
+  &.at:before {
+    content:'\40';
+  }
+
+  &.award-fill:before {
+    content:'\e022';
+  }
+
+  &.award-stroke:before {
+    content:'\e022';
+  }
+
+  &.bars:before {
+    content:'\e06f';
+  }
+
+  &.bars-alt:before {
+    content:'\e00a';
+  }
+
+  &.battery-charging:before {
+    content:'\e05d';
+  }
+
+  &.battery-empty:before {
+    content:'\e05c';
+  }
+
+  &.battery-full:before {
+    content:'\e073';
+  }
+
+  &.battery-half:before {
+    content:'\e05b';
+  }
+
+  &.beaker:before {
+    content:'\e023';
+  }
+
+  &.beaker-alt:before {
+    content:'\e010';
+  }
+
+  &.bolt:before {
+    content:'\26a1';
+  }
+
+  &.book:before {
+    content:'\e069';
+  }
+
+  &.book-alt2:before {
+    content:'\e06a';
+  }
+
+  &.book-alt:before {
+    content:'\e00b';
+  }
+
+  &.box:before {
+    content:'\e06b';
+  }
+
+  &.brush:before {
+    content:'\e01b';
+  }
+
+  &.brush-alt:before {
+    content:'\e01c';
+  }
+
+  &.calendar:before {
+    content:'\e001';
+  }
+
+  &.calendar-alt-fill:before {
+    content:'\e06c';
+  }
+
+  &.calendar-alt-stroke:before {
+    content:'\e06c';
+  }
+
+  &.camera:before {
+    content:'\e070';
+  }
+
+  &.cd:before {
+    content:'\e064';
+  }
+
+  &.chart:before {
+    content:'\e028';
+  }
+
+  &.chart-alt:before {
+    content:'\e029';
+  }
+
+  &.chat:before {
+    content:'\e05e';
+  }
+
+  &.chat-alt-fill:before {
+    content:'\e007';
+  }
+
+  &.chat-alt-stroke:before {
+    content:'\e007';
+  }
+
+  &.check:before {
+    content:'\2717';
+  }
+
+  &.check-alt:before {
+    content:'\2718';
+  }
+
+  &.clock:before {
+    content:'\e079';
+  }
+
+  &.cloud:before {
+    content:'\2601';
+  }
+
+  &.cloud-download:before {
+    content:'\e044';
+  }
+
+  &.cloud-upload:before {
+    content:'\e045';
+  }
+
+  &.cog:before {
+    content:'\2699';
+  }
+
+  &.comment-alt1-fill:before {
+    content:'\e003';
+  }
+
+  &.comment-alt1-stroke:before {
+    content:'\e003';
+  }
+
+  &.comment-alt2-fill:before {
+    content:'\e004';
+  }
+
+  &.comment-alt2-stroke:before {
+    content:'\e004';
+  }
+
+  &.comment-fill:before {
+    content:'\e06d';
+  }
+
+  &.comment-stroke:before {
+    content:'\e06d';
+  }
+
+  &.compass:before {
+    content:'\e021';
+  }
+
+  &.cursor:before {
+    content:'\e057';
+  }
+
+  &.curved-arrow:before {
+    content:'\2935';
+  }
+
+  &.denied:before {
+    content:'\26d4';
+  }
+
+  &.dial:before {
+    content:'\e058';
+  }
+
+  &.document-alt-fill:before {
+    content:'\e000';
+  }
+
+  &.document-alt-stroke:before {
+    content:'\e000';
+  }
+
+  &.document-fill:before {
+    content:'\e066';
+  }
+
+  &.document-stroke:before {
+    content:'\e066';
+  }
+
+  &.download:before {
+    content:'\e042';
+  }
+
+  &.eject:before {
+    content:'\e04b';
+  }
+
+  &.equalizer:before {
+    content:'\e052';
+  }
+
+  &.eye:before {
+    content:'\e025';
+  }
+
+  &.eyedropper:before {
+    content:'\e01e';
+  }
+
+  &.first:before {
+    content:'\e04c';
+  }
+
+  &.folder-fill:before {
+    content:'\e065';
+  }
+
+  &.folder-stroke:before {
+    content:'\e065';
+  }
+
+  &.fork:before {
+    content:'\e046';
+  }
+
+  &.fullscreen:before {
+    content:'\e04e';
+  }
+
+  &.fullscreen-alt:before {
+    content:'\e04f';
+  }
+
+  &.fullscreen-exit:before {
+    content:'\e050';
+  }
+
+  &.fullscreen-exit-alt:before {
+    content:'\e051';
+  }
+
+  &.hash:before {
+    content:'\23';
+  }
+
+  &.headphones:before {
+    content:'\e061';
+  }
+
+  &.heart-fill:before {
+    content:'\2764';
+  }
+
+  &.heart-stroke:before {
+    content:'\2764';
+  }
+
+  &.home:before {
+    content:'\2302';
+  }
+
+  &.image:before {
+    content:'\e027';
+  }
+
+  &.info:before {
+    content:'\2139';
+  }
+
+  &.iphone:before {
+    content:'\e06e';
+  }
+
+  &.key-fill:before {
+    content:'\26bf';
+  }
+
+  &.key-stroke:before {
+    content:'\26bf';
+  }
+
+  &.last:before {
+    content:'\e04d';
+  }
+
+  &.layers:before {
+    content:'\e01f';
+  }
+
+  &.layers-alt:before {
+    content:'\e020';
+  }
+
+  &.left-quote:before {
+    content:'\275d';
+  }
+
+  &.left-quote-alt:before {
+    content:'\e011';
+  }
+
+  &.lightbulb:before {
+    content:'\e063';
+  }
+
+  &.link:before {
+    content:'\e077';
+  }
+
+  &.list:before {
+    content:'\e055';
+  }
+
+  &.list-nested:before {
+    content:'\e056';
+  }
+
+  &.lock-fill:before {
+    content:'\e075';
+  }
+
+  &.lock-stroke:before {
+    content:'\e075';
+  }
+
+  &.loop-alt1:before {
+    content:'\e032';
+  }
+
+  &.loop-alt2:before {
+    content:'\e033';
+  }
+
+  &.loop-alt3:before {
+    content:'\e034';
+  }
+
+  &.loop-alt4:before {
+    content:'\e035';
+  }
+
+  &.magnifying-glass:before {
+    content:'\e074';
+  }
+
+  &.mail:before {
+    content:'\2709';
+  }
+
+  &.map-pin-alt:before {
+    content:'\e002';
+  }
+
+  &.map-pin-fill:before {
+    content:'\e068';
+  }
+
+  &.map-pin-stroke:before {
+    content:'\e068';
+  }
+
+  &.mic:before {
+    content:'\e05f';
+  }
+
+  &.minus:before {
+    content:'\2796';
+  }
+
+  &.minus-alt:before {
+    content:'\e009';
+  }
+
+  &.moon-fill:before {
+    content:'\263e';
+  }
+
+  &.moon-stroke:before {
+    content:'\263e';
+  }
+
+  &.move:before {
+    content:'\e03e';
+  }
+
+  &.move-alt1:before {
+    content:'\e03f';
+  }
+
+  &.move-alt2:before {
+    content:'\e040';
+  }
+
+  &.move-horizontal:before {
+    content:'\e038';
+  }
+
+  &.move-horizontal-alt1:before {
+    content:'\e039';
+  }
+
+  &.move-horizontal-alt2:before {
+    content:'\e03a';
+  }
+
+  &.move-vertical:before {
+    content:'\e03b';
+  }
+
+  &.move-vertical-alt1:before {
+    content:'\e03c';
+  }
+
+  &.move-vertical-alt2:before {
+    content:'\e03d';
+  }
+
+  &.movie:before {
+    content:'\e060';
+  }
+
+  &.new-window:before {
+    content:'\e059';
+  }
+
+  &.pause:before {
+    content:'\e049';
+  }
+
+  &.pen:before {
+    content:'\270e';
+  }
+
+  &.pen-alt2:before {
+    content:'\e006';
+  }
+
+  &.pen-alt-fill:before {
+    content:'\e005';
+  }
+
+  &.pen-alt-stroke:before {
+    content:'\e005';
+  }
+
+  &.pilcrow:before {
+    content:'\b6';
+  }
+
+  &.pin:before {
+    content:'\e067';
+  }
+
+  &.play:before {
+    content:'\e047';
+  }
+
+  &.play-alt:before {
+    content:'\e048';
+  }
+
+  &.plus:before {
+    content:'\2795';
+  }
+
+  &.plus-alt:before {
+    content:'\e008';
+  }
+
+  &.question-mark:before {
+    content:'\3f';
+  }
+
+  &.rain:before {
+    content:'\26c6';
+  }
+
+  &.read-more:before {
+    content:'\e054';
+  }
+
+  &.reload:before {
+    content:'\e030';
+  }
+
+  &.reload-alt:before {
+    content:'\e031';
+  }
+
+  &.right-quote:before {
+    content:'\275e';
+  }
+
+  &.right-quote-alt:before {
+    content:'\e012';
+  }
+
+  &.rss:before {
+    content:'\e02c';
+  }
+
+  &.rss-alt:before {
+    content:'\e02d';
+  }
+
+  &.share:before {
+    content:'\e02e';
+  }
+
+  &.spin:before {
+    content:'\e036';
+  }
+
+  &.spin-alt:before {
+    content:'\e037';
+  }
+
+  &.star:before {
+    content:'\2605';
+  }
+
+  &.steering-wheel:before {
+    content:'\e024';
+  }
+
+  &.stop:before {
+    content:'\e04a';
+  }
+
+  &.sun-fill:before {
+    content:'\2600';
+  }
+
+  &.sun-stroke:before {
+    content:'\2600';
+  }
+
+  &.tag-fill:before {
+    content:'\e02b';
+  }
+
+  &.tag-stroke:before {
+    content:'\e02b';
+  }
+
+  &.target:before {
+    content:'\e02a';
+  }
+
+  &.transfer:before {
+    content:'\e041';
+  }
+
+  &.trash-fill:before {
+    content:'\e05a';
+  }
+
+  &.trash-stroke:before {
+    content:'\e05a';
+  }
+
+  &.umbrella:before {
+    content:'\2602';
+  }
+
+  &.undo:before {
+    content:'\e02f';
+  }
+
+  &.unlock-fill:before {
+    content:'\e076';
+  }
+
+  &.unlock-stroke:before {
+    content:'\e076';
+  }
+
+  &.upload:before {
+    content:'\e043';
+  }
+
+  &.user:before {
+    content:'\e062';
+  }
+
+  &.volume:before {
+    content:'\e072';
+  }
+
+  &.volume-mute:before {
+    content:'\e071';
+  }
+
+  &.wrench:before {
+    content:'\e078';
+  }
+
+  &.x:before {
+    content:'\2717';
+  }
+
+  &.x-alt:before {
+    content:'\2718';
+  }
+}
