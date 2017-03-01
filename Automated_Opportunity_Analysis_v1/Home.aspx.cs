@@ -210,7 +210,7 @@ namespace DAReportsAutomation
 
         [WebMethod]
         [ScriptMethod(UseHttpGet = true)]
-        public static string Register(string hospital, string startdate, string enddate)
+        public static string Register(string hospital, string startdate, string enddate, string aprdrgCheck)
         {
             try
             {
@@ -221,7 +221,7 @@ namespace DAReportsAutomation
                 {
                     conn.Open();
 
-                    string InputForPPTGen = "Insert into InputForReportReadmissions ( [DatabaseName], [Hospital], [Startdate],[Enddate] , [UserName], [status],[email])values('" + DatabaseName + "'" + "," + "'" + hospital + "'" + "," + "'" + startdate + "'" + "," + "'" + enddate + "'" + "," + "'" + Username + "'" + "," + "'" + "-1" + "'" + "," + "'" + Email + "'" + ") select SCOPE_IDENTITY() As FileToBeSearched;";
+                    string InputForPPTGen = "Insert into InputForReportReadmissions ( [DatabaseName], [Hospital], [Startdate],[Enddate] , [UserName], [status],[email], [aprdrgw/excludes])values('" + DatabaseName + "'" + "," + "'" + hospital + "'" + "," + "'" + startdate + "'" + "," + "'" + enddate + "'" + "," + "'" + Username + "'" + "," + "'" + "-1" + "'" + "," + "'" + Email + "'" +","+"'" + aprdrgCheck + "'" + ") select SCOPE_IDENTITY() As FileToBeSearched;";
                     SqlCommand cmd = new SqlCommand(InputForPPTGen, conn);
 
                     Int32 PPTId = Convert.ToInt32(cmd.ExecuteScalar());

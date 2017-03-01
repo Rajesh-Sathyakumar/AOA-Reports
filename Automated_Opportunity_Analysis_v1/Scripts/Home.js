@@ -148,7 +148,7 @@ $(function () {
                 
             var Startdate = Date.parse($('#startdt').val());
             var Enddate = Date.parse($('#enddt').val());
-
+            var APRDRGCheck = $('input[name=aprdrgCheck]:checked').attr('id');
 
             if (MemberName != "None Selected") {
 
@@ -162,7 +162,7 @@ $(function () {
 
                                 if (Startdate <= MaxDischargeDate) {
 
-                                    if (Enddate > MaxDischargeDate) {
+                                    if (Enddate >= MaxDischargeDate) {
                                         mesg = $.growl.warning({
                                             message: "Please Note that the Generated Report will contain results only up till the 'Data Loaded Till Date' !"
                                             ,delayOnHover: true,
@@ -175,7 +175,7 @@ $(function () {
                                     $.ajax({
                                         type: "GET",
                                         url: serverURL + 'Home.aspx/Register',
-                                        data: { hospital: "'" + hospitalList + "'", startdate: "'" + $('#startdt').val() + "'", enddate: "'" + $('#enddt').val() + "'" },
+                                        data: { hospital: "'" + hospitalList + "'", startdate: "'" + $('#startdt').val() + "'", enddate: "'" + $('#enddt').val() + "'", aprdrgCheck: "'" + APRDRGCheck + "'" },
                                         contentType: "application/json; charset=utf-8",
                                         dataType: "json",
                                         success: function (data) {

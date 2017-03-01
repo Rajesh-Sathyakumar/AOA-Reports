@@ -60,7 +60,6 @@
                     <div class="col12">
                         <ul class="primary">
                             <li id="nav-PDA" class="no-menu current"><a href="#">Readmission Analytics </a></li>
-                           
                         </ul>
                     </div>
                 </div>
@@ -124,19 +123,29 @@
 
                 <div class="row">
                    
-                    <div class="col6">
+                    <div class="col3">
                         <strong>Start Date</strong>
                         <div id="Startdate">
                             <input id="startdt" class="dately" name="bday" data-cs-mindate="01/01/2000" data-cs-maxdate="01/01/2020"/>
                         </div>
                     </div>
 
-                    <div class="col6">
+                    <div class="col3">
                         <strong>End Date</strong>
                         <div id="EndDate">
                             <input id="enddt" class="dately" name="bday" data-cs-mindate="01/01/2000" data-cs-maxdate="01/01/2020"/>
                         </div>
                     </div>
+                       
+                    
+                <div class="col4">
+                  <strong>Readmission Metric</strong>
+                  <div id ="aprdrgSelection">
+                    <input id="0" type="radio" name="aprdrgCheck" checked="checked">Any APRDRG
+                    <input id="1" type="radio" name="aprdrgCheck">Any APRDRG w/ Excludes
+                  </div>  
+                </div>
+
                 </div>
                 
                 <br />
