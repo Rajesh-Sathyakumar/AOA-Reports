@@ -8,8 +8,7 @@ $(function () {
 
         $('.dately').dately();
 
-   
-
+  
         $.ajax({
             type: "GET",
             url: serverURL + "Home.aspx/GetUsername",
