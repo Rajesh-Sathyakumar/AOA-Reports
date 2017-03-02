@@ -11,48 +11,47 @@ using SamlHelperLibrary.Configuration;
 using System.Web.Script.Services;
 using System.Web.Services;
 using System.Web;
+using SamlHelperLibrary.Models;
 
 namespace DAReportsAutomation
 {
     public partial class Home : System.Web.UI.Page
     {
-        public static string Email;
-
-        public static string Username { get; set; }
-
-
-        public static string DatabaseName;
-
         public readonly static string ProdConn = ConfigurationManager.ConnectionStrings["ProductionConnectionString"].ToString();
         public readonly static string StgConn = ConfigurationManager.ConnectionStrings["StagingConnectionString"].ToString();
 
 
-        //protected void Page_Init(object sender, EventArgs e)
-        //{
-        //    var cas = new CasAuthenticationService(SamlHelperConfiguration.Config, UserSessionHandler.Get());
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
+            {
+                userEmail = "Rajesh",
+                userName = "sathyakr@advisory.com"
+            });
+            return;
 
-        //    if (!cas.IsSAMLResponse(new HttpContextWrapper(this.Context)))
-        //    {
-        //        cas.RedirectUserToCasLogin(
-        //            new Guid("5B95F3B2-C265-4E1A-91AB-60FC449E96EB"),
-        //        new Guid("85346158-DB2E-49CE-80AC-0E868527DF2B"),
-        //        new Guid("37B473AE-B5A5-4839-91D5-80676A86B4B9"),
-        //       null);
-        //    }
-        //    else
-        //    {
-        //        var sessionInfo = cas.GetSessionFromSaml(new HttpContextWrapper(this.Context));
-        //        Email = sessionInfo.userEmail;
-        //        Username = sessionInfo.firstName;
+            var cas = new CasAuthenticationService(SamlHelperConfiguration.Config, UserSessionHandler.Get());
 
-        //        if (sessionInfo != null)
-        //        {
-        //            HttpContext.Current.Session.Add("UserSessionInfo", sessionInfo);
-        //            HttpContext.Current.Session.Timeout = 20;
-        //        }
+            if (!cas.IsSAMLResponse(new HttpContextWrapper(this.Context)))
+            {
+                cas.RedirectUserToCasLogin(
+                    new Guid("5B95F3B2-C265-4E1A-91AB-60FC449E96EB"),
+                new Guid("85346158-DB2E-49CE-80AC-0E868527DF2B"),
+                new Guid("37B473AE-B5A5-4839-91D5-80676A86B4B9"),
+               null);
+            }
+            else
+            {
+                var sessionInfo = cas.GetSessionFromSaml(new HttpContextWrapper(this.Context));
+               
+                if (sessionInfo != null)
+                {
+                    HttpContext.Current.Session.Add("UserSessionInfo", sessionInfo);
+                    HttpContext.Current.Session.Timeout = 20;
+                }
 
-        //    }
-        //}
+            }
+        }
 
         [WebMethod]
         [ScriptMethod(UseHttpGet = true)]
@@ -60,7 +59,7 @@ namespace DAReportsAutomation
         {
             System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
 
-            return serializer.Serialize(Username);
+            return serializer.Serialize(((UserSessionInfo)HttpContext.Current.Session["UserSessionInfo"]).userName);
         }
 
         [WebMethod]
@@ -107,11 +106,12 @@ namespace DAReportsAutomation
         [ScriptMethod(UseHttpGet = true)]
         public static string GetMaxDischargeDate()
         {
- 
+            var databaseName = HttpContext.Current.Session["DatabaseName"];
+
             DataTable dt = new DataTable();
             using (SqlConnection con = new SqlConnection(StgConn))
             {
-                string completeLogQuery = "select convert(nvarchar(max),MAX(b.dischargedate)) as MaxDischargeDate from " + DatabaseName + ".dbo.Discharges (NoLock) a JOIN " + DatabaseName + ".dbo.DischargeDates (NoLock) b on a.Dischargedate= b.DischargeDatekey";
+                string completeLogQuery = "select convert(nvarchar(max),MAX(b.dischargedate)) as MaxDischargeDate from " + databaseName + ".dbo.Discharges (NoLock) a JOIN " + databaseName + ".dbo.DischargeDates (NoLock) b on a.Dischargedate= b.DischargeDatekey";
 
                 using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
                 {
@@ -144,13 +144,11 @@ namespace DAReportsAutomation
         {
             try
             {
-                
-
                 getDatabaseName(ProjectName);
                 DataTable dt = new DataTable();
                 using (SqlConnection con = new SqlConnection(StgConn))
                 {
-                    string completeLogQuery = "select HospitalKey, HospitalName from " + DatabaseName + ".dbo.Hospitals (NoLock)";
+                    string completeLogQuery = "select HospitalKey, HospitalName from " + HttpContext.Current.Session["DatabaseName"] + ".dbo.Hospitals (NoLock)";
 
                     using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
                     {
@@ -199,7 +197,7 @@ namespace DAReportsAutomation
 
                         foreach (DataColumn col in dt.Columns)
                         {
-                            DatabaseName = dr[col].ToString();
+                            HttpContext.Current.Session.Add("DatabaseName", dr[col].ToString());
                         }
                     }
                 }
@@ -214,6 +212,7 @@ namespace DAReportsAutomation
         {
             try
             {
+                var sessionInfo = ((UserSessionInfo) HttpContext.Current.Session["UserSessionInfo"]);
 
                 DataTable dataTable = new DataTable();
 
@@ -221,7 +220,7 @@ namespace DAReportsAutomation
                 {
                     conn.Open();
 
-                    string InputForPPTGen = "Insert into InputForReportReadmissions ( [DatabaseName], [Hospital], [Startdate],[Enddate] , [UserName], [status],[email], [aprdrgw/excludes])values('" + DatabaseName + "'" + "," + "'" + hospital + "'" + "," + "'" + startdate + "'" + "," + "'" + enddate + "'" + "," + "'" + Username + "'" + "," + "'" + "-1" + "'" + "," + "'" + Email + "'" +","+"'" + aprdrgCheck + "'" + ") select SCOPE_IDENTITY() As FileToBeSearched;";
+                    string InputForPPTGen = "Insert into InputForReportReadmissions ( [DatabaseName], [Hospital], [Startdate],[Enddate] , [UserName], [status],[email], [aprdrgw/excludes])values('" + HttpContext.Current.Session["DatabaseName"] + "'" + "," + "'" + hospital + "'" + "," + "'" + startdate + "'" + "," + "'" + enddate + "'" + "," + "'" + sessionInfo.userName + "'" + "," + "'" + "-1" + "'" + "," + "'" + sessionInfo.userEmail + "'" +","+"'" + aprdrgCheck + "'" + ") select SCOPE_IDENTITY() As FileToBeSearched;";
                     SqlCommand cmd = new SqlCommand(InputForPPTGen, conn);
 
                     Int32 PPTId = Convert.ToInt32(cmd.ExecuteScalar());
