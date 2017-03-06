@@ -70,7 +70,7 @@
     <div id="body">
         <form id="DARA" runat="server">
             <div class="container">
-                <h1 id="page_title" data-nav="Components">Welcome To Readmission PPT OA</h1>
+                <h1 id="page_title" data-nav="Components">Readmissions OA Lightning Deck</h1>
                
                 <br />
 

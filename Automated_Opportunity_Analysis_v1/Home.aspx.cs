@@ -23,12 +23,12 @@ namespace DAReportsAutomation
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            //HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
-            //{
-            //    userEmail = "Rajesh",
-            //    userName = "sathyakr@advisory.com"
-            //});
-            //return;
+            HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
+            {
+                userEmail = "sathyakr@advisory.com",
+                userName = "Rajesh"
+            });
+            return;
 
             var cas = new CasAuthenticationService(SamlHelperConfiguration.Config, UserSessionHandler.Get());
 
@@ -59,7 +59,7 @@ namespace DAReportsAutomation
         {
             System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
 
-            return serializer.Serialize(((UserSessionInfo)HttpContext.Current.Session["UserSessionInfo"]).userName);
+            return serializer.Serialize(((UserSessionInfo)HttpContext.Current.Session["UserSessionInfo"]).firstName);
         }
 
         [WebMethod]
