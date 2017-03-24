@@ -74,7 +74,6 @@
                
                 <br />
 
-
                 <div class="loading" id="LoadingScreen" runat="server" style="display: none;">
                     <div class="spinner" id="spin" runat="server"></div>
                 </div>
@@ -85,7 +84,12 @@
 
                 <div class="row">
                     
-                    <div class="col6"> <p></p></div>
+                     <div class="col6">
+                        <strong>Member Name</strong>
+                        <div id="MemberDropDown">
+                            
+                        </div>
+                    </div>
 
                     <div class="col2">
                         <strong>Data Loaded Till</strong>
@@ -95,22 +99,23 @@
                     </div>
 
                 </div>
-
-                <div class="row"> <p></p></div>
 				
 				<div class="row">
-                    
-                    <div class="col6">
-                        <strong>Member Name</strong>
-                        <div id="MemberDropDown">
-                            
-                        </div>
-                    </div>
 
                     <div class="col6">
                         <strong>Facilities</strong>
                         <div id="HosDropDown">
                             <select id="example-enableFiltering-includeSelectAllOption" multiple="multiple">
+
+                            </select>
+                                                  
+                        </div>
+                    </div>
+                    
+                    <div class="col6">
+                        <strong>Payers</strong>
+                        <div id="payerDropDown">
+                            <select id="payerMultiSelect" multiple="multiple">
 
                             </select>
                                                   

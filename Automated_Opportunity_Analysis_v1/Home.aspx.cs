@@ -180,6 +180,51 @@ namespace DAReportsAutomation
             
         }
 
+
+        [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
+        public static string GetPayerList()
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                using (SqlConnection con = new SqlConnection(StgConn))
+                {
+                    string completeLogQuery =
+                        @"select distinct PayorClassKey as PK, payorsummarydescription +'-'+payorclassdescription as PD
+                                        from " + HttpContext.Current.Session["DatabaseName"] + @".dbo.payorclasses
+                                        order by PD"; 
+
+                    using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
+                    {
+                        con.Open();
+                        SqlDataAdapter da = new SqlDataAdapter(cmd);
+                        da.Fill(dt);
+                        System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                        List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+                        Dictionary<string, object> row;
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            row = new Dictionary<string, object>();
+                            foreach (DataColumn col in dt.Columns)
+                            {
+                                row.Add(col.ColumnName, dr[col]);
+                            }
+                            rows.Add(row);
+                        }
+
+                        return serializer.Serialize(rows);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                return e.Message + " <<   " + e.StackTrace;
+            }
+
+        }
+
         private static void getDatabaseName(string ProjectName)
         {
             DataTable dt = new DataTable();
@@ -208,7 +253,7 @@ namespace DAReportsAutomation
 
         [WebMethod]
         [ScriptMethod(UseHttpGet = true)]
-        public static string Register(string hospital, string startdate, string enddate, string aprdrgCheck)
+        public static string Register(string hospital, string startdate, string enddate, string aprdrgCheck,string payers)
         {
             try
             {
@@ -220,7 +265,13 @@ namespace DAReportsAutomation
                 {
                     conn.Open();
 
-                    string InputForPPTGen = "Insert into InputForReportReadmissions ( [DatabaseName], [Hospital], [Startdate],[Enddate] , [UserName], [status],[email], [aprdrgw/excludes])values('" + HttpContext.Current.Session["DatabaseName"] + "'" + "," + "'" + hospital + "'" + "," + "'" + startdate + "'" + "," + "'" + enddate + "'" + "," + "'" + sessionInfo.userName + "'" + "," + "'" + "-1" + "'" + "," + "'" + sessionInfo.userEmail + "'" +","+"'" + aprdrgCheck + "'" + ") select SCOPE_IDENTITY() As FileToBeSearched;";
+                    string InputForPPTGen = @"Insert into InputForReportReadmissions ( 
+                            [DatabaseName], [Hospital], [Startdate],[Enddate] , [UserName], [status],[email], [aprdrgw/excludes],[PayerKeys])values('" 
+                            + HttpContext.Current.Session["DatabaseName"] + "'" + "," + 
+                            "'" + hospital + "'" + "," + "'" + startdate + "'" + "," + "'" + enddate + "'" + "," 
+                            + "'" + sessionInfo.userName + "'" + "," + "'" + "-1" + "'" + "," + "'" + sessionInfo.userEmail + "'" +","
+                            +"'" + aprdrgCheck + "'" + ","
+                            + "'" + payers + "'" +") select SCOPE_IDENTITY() As FileToBeSearched;";
                     SqlCommand cmd = new SqlCommand(InputForPPTGen, conn);
 
                     Int32 PPTId = Convert.ToInt32(cmd.ExecuteScalar());

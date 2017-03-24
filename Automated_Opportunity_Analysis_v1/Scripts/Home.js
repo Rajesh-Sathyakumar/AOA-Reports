@@ -29,7 +29,6 @@ $(function () {
                 var source = document.getElementById("MemberTemplate").innerHTML;
                 var template = Handlebars.compile(source);
                 document.getElementById("MemberDropDown").innerHTML = template({ rows: JSON.parse(response.d) });
-
                 $('#MemberDropDown').trigger('change');
             }
         });
@@ -49,8 +48,18 @@ $(function () {
             }
             $('#example-enableFiltering-includeSelectAllOption').html("");
             $('#example-enableFiltering-includeSelectAllOption').selectr({
-                width: 350,
-                listwidth: 350
+                width: 515,
+                listwidth: 515
+            });
+
+            if ($('#payerMultiSelect').data('crux-selectr')) {
+                $('#payerMultiSelect').selectr('destroy');
+                $('#payerMultiSelect').show();
+            }
+            $('#payerMultiSelect').html("");
+            $('#payerMultiSelect').selectr({
+                width: 515,
+                listwidth: 515
             });
 
             document.getElementById("maxdischarge").innerHTML = "None";
@@ -80,8 +89,8 @@ $(function () {
 
                     $('#example-enableFiltering-includeSelectAllOption').html(optionEl);
                     $('#example-enableFiltering-includeSelectAllOption').selectr({
-                        width: 350,
-                        listwidth: 350
+                        width: 515,
+                        listwidth: 515
                     });
 
 
@@ -107,13 +116,42 @@ $(function () {
                         }
                     });
 
+                    $.ajax({
+                        type: "GET",
+                        url: serverURL + "Home.aspx/GetPayerList",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            temp = data;
+                            var rows = JSON.parse(data.d);
+                            var optionEl = "";
+                            for (var i = 0; i < rows.length; i++) {
+                                optionEl += "<option  value='" + rows[i].PK + "'>" + rows[i].PD + "</option>";
+                            }
+                            if ($('#payerMultiSelect').data('crux-selectr')) {
+                                $('#payerMultiSelect').selectr('destroy');
+                                $('#payerMultiSelect').show();
+                            }
+
+                            $('#payerMultiSelect').html(optionEl);
+                            $('#payerMultiSelect').selectr({
+                                width: 515,
+                                listwidth: 515
+                            });
+                        },
+
+                        error: function (data, success, error) {
+                            alert(error);
+                        }
+                    });
+
                 },
 
                 error: function (data, success, error) {
                     alert(error);
                 }
             });
-
 
         }
 
@@ -125,24 +163,28 @@ $(function () {
             var MemberName = $("#MemberDropDown").find("option:selected").text();
 
             var hospitalList = "";
-            //var selectedHospitals = $($('#example-enableFiltering-includeSelectAllOption').selectr('html', 'list')).find(':checked');
+            payerList = "";
 
-            //selectedHospitals.each(function (i, el) {
-            //    hospitalList += $(el).parent().find('label').text();
-            //    hospitalList += (i < (selectedHospitals.length - 1)) ? ',' : '';
-            //});
-
-
-            myList = [];
+            var hospitalListArray = [];
             $('#example-enableFiltering-includeSelectAllOption').each(function () {
-                myList.push($(this).val())
+                hospitalListArray.push($(this).val());
             });
             
             var i;
 
-            for (i = 0; i < myList.length; i++) {
-                    hospitalList += myList[i];
-                    hospitalList += (i < (myList.length - 1)) ? ',' : '';
+            for (i = 0; i < hospitalListArray.length; i++) {
+                hospitalList += hospitalListArray[i];
+                hospitalList += (i < (hospitalListArray.length - 1)) ? ',' : '';
+            }
+
+            var payerListArray = [];
+            $('#payerMultiSelect').each(function () {
+                payerListArray.push($(this).val());
+            });
+
+            for (i = 0; i < payerListArray.length; i++) {
+                payerList += payerListArray[i];
+                payerList += (i < (payerListArray.length - 1)) ? ',' : '';
             }
                 
             var Startdate = Date.parse($('#startdt').val());
@@ -151,101 +193,116 @@ $(function () {
 
             if (MemberName != "None Selected") {
 
-                
-                if (hospitalList && hospitalList != "") {
 
-                    if ( $('#startdt').val() != "") {
+                if (hospitalList != "null") {
 
-                        if ( $('#enddt').val() != "") {
-                            if (Startdate <= Enddate) {
+                    if (payerList != "null") {
 
-                                if (Startdate <= MaxDischargeDate) {
+                        if ($('#startdt').val() != "") {
 
-                                    if (Enddate >= MaxDischargeDate) {
-                                        mesg = $.growl.warning({
-                                            message: "Please Note that the Generated Report will contain results only up till the 'Data Loaded Till Date' !"
-                                            ,delayOnHover: true,
+                            if ($('#enddt').val() != "") {
+                                if (Startdate <= Enddate) {
+
+                                    if (Startdate <= MaxDischargeDate) {
+
+                                        if (Enddate >= MaxDischargeDate) {
+                                            mesg = $.growl.warning({
+                                                message:
+                                                    "Please Note that the Generated Report will contain results only up till the 'Data Loaded Till Date' !",
+                                                delayOnHover: true,
+                                                duration: 10000
+                                            });
+                                        }
+
+                                        $('.loading').show();
+
+                                        $.ajax({
+                                            type: "GET",
+                                            url: serverURL + 'Home.aspx/Register',
+                                            data: {
+                                                hospital: "'" + hospitalList + "'",
+                                                startdate: "'" + $('#startdt').val() + "'",
+                                                enddate: "'" + $('#enddt').val() + "'",
+                                                aprdrgCheck: "'" + APRDRGCheck + "'",
+                                                payers: "'" + payerList + "'"
+
+                                            },
+                                            contentType: "application/json; charset=utf-8",
+                                            dataType: "json",
+                                            success: function(data) {
+                                                if (data.d == 'Success') {
+                                                    //mesg.style.color = "green";
+                                                    mesg = $.growl.notice({
+                                                        message:
+                                                            "Your report has been successfully generated. You will recieve an email shortly.",
+                                                        delayOnHover: true,
+                                                        duration: 10000
+                                                    });
+                                                    $('.loading').hide();
+                                                    e.preventDefault();
+                                                } else if (data.d == 'Failure') {
+                                                    mesg = $.growl.warning({
+                                                        message:
+                                                            "The PPT generation failed. There was an error and it has been intimated to the AOA Team. We will get back to you shortly with the report.",
+                                                        delayOnHover: true,
+                                                        duration: 10000
+                                                    });
+                                                    $('.loading').hide();
+                                                }
+                                            },
+                                            error: function(request, status, error, e) {
+                                                mesg = $.growl.warning({
+                                                    message:
+                                                        "The PPT generation failed. There was an error and it has been intimated to the AOA Team. We will get back to you shortly with the report.",
+                                                    delayOnHover: true,
+                                                    duration: 10000
+                                                });
+                                                $('.loading').hide();
+                                                //alert(e.message);
+                                            }
+                                        });
+                                    } else {
+                                        mesg = $.growl.error({
+                                            message:
+                                                "Error: Please Choose an StartDate that is lesser than the 'Data Loaded Till' Date !",
+                                            delayOnHover: true,
                                             duration: 10000
                                         });
                                     }
 
-                                    $('.loading').show();
-
-                                    $.ajax({
-                                        type: "GET",
-                                        url: serverURL + 'Home.aspx/Register',
-                                        data: { hospital: "'" + hospitalList + "'", startdate: "'" + $('#startdt').val() + "'", enddate: "'" + $('#enddt').val() + "'", aprdrgCheck: "'" + APRDRGCheck + "'" },
-                                        contentType: "application/json; charset=utf-8",
-                                        dataType: "json",
-                                        success: function (data) {
-                                            if (data.d == 'Success') {
-                                                //mesg.style.color = "green";
-                                                mesg = $.growl.notice({
-                                                    message: "Your report has been successfully generated. You will recieve an email shortly."
-                                                    , delayOnHover: true,
-                                                    duration: 10000
-                                                });
-                                                $('.loading').hide();
-                                                e.preventDefault();
-                                            }
-                                            else if (data.d == 'Failure') {
-                                                mesg = $.growl.warning({
-                                                    message: "The PPT generation failed. There was an error and it has been intimated to the DARA Team. We will get back to you shortly with the report."
-                                                , delayOnHover: true,
-                                                    duration: 10000
-                                                });
-                                                $('.loading').hide();
-                                                alert("Rajesh");
-                                            }
-                                        },
-                                        error: function (request, status, error, e) {
-                                            mesg = $.growl.warning({
-                                                message: "The PPT generation failed. There was an error and it has been intimated to the DARA Team. We will get back to you shortly with the report."
-                                                , delayOnHover: true,
-                                                duration: 10000
-                                            });
-                                            $('.loading').hide();
-                                            //alert(e.message);
-                                        }
-                                    });
-                                }
-                                else {
+                                } else {
                                     mesg = $.growl.error({
-                                        message: "Error: Please Choose an StartDate that is lesser than the 'Data Loaded Till' Date !"
-                                        , delayOnHover: true,
+                                        message: "Error: Please Choose an EndDate that is greater than Startdate!",
+                                        delayOnHover: true,
                                         duration: 10000
                                     });
                                 }
-                                
-                            }
-                            else {
+                            } else {
                                 mesg = $.growl.error({
-                                    message: "Error: Please Choose an EndDate that is greater than Startdate!"
-                                    , delayOnHover: true,
+                                    message: "Error: Please select a valid End Date!",
+                                    delayOnHover: true,
                                     duration: 10000
                                 });
                             }
-                        }
-                        else {
+                        } else {
                             mesg = $.growl.error({
-                                message: "Error: Please select a valid End Date!"
-                                , delayOnHover: true,
+                                message: "Error: Please select a valid Startdate!",
+                                delayOnHover: true,
                                 duration: 10000
                             });
                         }
-                    }
-                    else {
+                    } else {
                         mesg = $.growl.error({
-                            message: "Error: Please select a valid Startdate!"
-                            , delayOnHover: true,
+                            message: "Error: Please select atleast one Payer!",
+                            delayOnHover: true,
                             duration: 10000
                         });
                     }
                 }
                 else {
                     mesg = $.growl.error({
-                        message: "Error: Please select a valid Facility!"
-                        , delayOnHover: true,
+                        message: "Error: Please select atleast one Facility!",
+                        delayOnHover: true,
                         duration: 10000
                     });
                 }
