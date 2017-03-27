@@ -23,12 +23,12 @@ namespace DAReportsAutomation
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            //HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
-            //{
-            //    userEmail = "sathyakr@advisory.com",
-            //    userName = "Rajesh"
-            //});
-            //return;
+            HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
+            {
+                userEmail = "sathyakr@advisory.com",
+                userName = "Rajesh"
+            });
+            return;
 
             var cas = new CasAuthenticationService(SamlHelperConfiguration.Config, UserSessionHandler.Get());
 
@@ -192,7 +192,9 @@ namespace DAReportsAutomation
                 {
                     string completeLogQuery =
                         @"select distinct PayorClassKey as PK, payorsummarydescription +'-'+payorclassdescription as PD
-                                        from " + HttpContext.Current.Session["DatabaseName"] + @".dbo.payorclasses
+                                        from " + HttpContext.Current.Session["DatabaseName"] + @".dbo.payorclasses (NOLOCK)
+                                        JOIN "+ HttpContext.Current.Session["DatabaseName"]+ @".DBO.DISCHARGES (NOLOCK) ON DISCHARGES.PAYORCLASS = PAYORCLASSES.PAYORCLASSKEY
+                                        WHERE DISCHARGINGSERVICE = 0
                                         order by PD"; 
 
                     using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
