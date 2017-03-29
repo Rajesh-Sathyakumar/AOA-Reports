@@ -217,16 +217,9 @@ $(function () {
                                         $('.loading').show();
 
                                         $.ajax({
-                                            type: "GET",
+                                            type: "POST",
                                             url: serverURL + 'Home.aspx/Register',
-                                            data: {
-                                                hospital: "'" + hospitalList + "'",
-                                                startdate: "'" + $('#startdt').val() + "'",
-                                                enddate: "'" + $('#enddt').val() + "'",
-                                                aprdrgCheck: "'" + APRDRGCheck + "'",
-                                                payers: "'" + payerList + "'"
-
-                                            },
+                                            data: "{\"hospital\" : \""+hospitalList+"\", \"startdate\" :\"" + $('#startdt').val() +"\", \"enddate\":\""+  $('#enddt').val() + "\", \"aprdrgCheck\": \""+APRDRGCheck +"\", \"payers\" : \""+ payerList +"\"}",
                                             contentType: "application/json; charset=utf-8",
                                             dataType: "json",
                                             success: function(data) {

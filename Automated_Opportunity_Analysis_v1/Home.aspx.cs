@@ -254,7 +254,6 @@ namespace DAReportsAutomation
 
 
         [WebMethod]
-        [ScriptMethod(UseHttpGet = true)]
         public static string Register(string hospital, string startdate, string enddate, string aprdrgCheck,string payers)
         {
             try
