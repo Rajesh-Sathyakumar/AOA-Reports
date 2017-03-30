@@ -123,11 +123,20 @@ $(function () {
                         dataType: "json",
                         success: function (data) {
 
-                            temp = data;
                             var rows = JSON.parse(data.d);
+                            localStorage.setItem('payerList', data.d);
+
+                            var uniquePayors = [];
+
+                            $.each(rows, function (index, value) {
+                                if ($.inArray(value.PD, uniquePayors) === -1) {
+                                    uniquePayors.push( value.PD );
+                                }
+                            });
+
                             var optionEl = "";
-                            for (var i = 0; i < rows.length; i++) {
-                                optionEl += "<option  value='" + rows[i].PK + "'>" + rows[i].PD + "</option>";
+                            for (var i = 0; i < uniquePayors.length; i++) {
+                                optionEl += "<option value='" + uniquePayors[i] + "' >" + uniquePayors[i] + "</option>";
                             }
                             if ($('#payerMultiSelect').data('crux-selectr')) {
                                 $('#payerMultiSelect').selectr('destroy');
@@ -182,10 +191,16 @@ $(function () {
                 payerListArray.push($(this).val());
             });
 
-            for (i = 0; i < payerListArray.length; i++) {
-                payerList += payerListArray[i];
-                payerList += (i < (payerListArray.length - 1)) ? ',' : '';
-            }
+            var fullPayerList = JSON.parse(localStorage.payerList);
+
+            $.each(fullPayerList, function (index, value) {
+                if ($.inArray(value.PD, payerListArray[0]) > -1) {
+                    payerList += (value.PK  + ",");
+                }
+            });
+
+            payerList = payerList.slice(0, -1);
+
                 
             var Startdate = Date.parse($('#startdt').val());
             var Enddate = Date.parse($('#enddt').val());
@@ -196,7 +211,7 @@ $(function () {
 
                 if (hospitalList != "null") {
 
-                    if (payerList != "null") {
+                    if (payerList != "") {
 
                         if ($('#startdt').val() != "") {
 
