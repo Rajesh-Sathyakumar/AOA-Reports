@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using SamlHelperLibrary;
 using SamlHelperLibrary.Service;
 using SamlHelperLibrary.Configuration;
-
+using xlNS = Microsoft.Office.Interop.Excel;
 
 using System.Web.Script.Services;
 using System.Web.Services;
@@ -23,12 +24,12 @@ namespace DAReportsAutomation
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            //HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
-            //{
-            //    userEmail = "sathyakr@advisory.com",
-            //    userName = "Rajesh"
-            //});
-            //return;
+            HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
+            {
+                userEmail = "sathyakr@advisory.com",
+                userName = "Rajesh"
+            });
+            return;
 
             var cas = new CasAuthenticationService(SamlHelperConfiguration.Config, UserSessionHandler.Get());
 
@@ -52,6 +53,244 @@ namespace DAReportsAutomation
 
             }
         }
+
+        [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
+        public static void DownloadUsageLogs()
+        {
+            xlNS.Application excelApplication = null;
+            xlNS.Workbook excelWorkBook = null;
+            excelApplication = new xlNS.Application();
+
+            DateTime date = new DateTime();
+            string Time = DateTime.Now.ToString("ddMMMyyyy.hh.m.s tt");
+
+            string UsageLogsTemplatePath = ConfigurationManager.AppSettings["UsageLogsTemplatePath"];
+            string UsageLogPath = ConfigurationManager.AppSettings["UsageLogPath"];
+            string filename = "AOA_UsageLogs";
+
+            string currentWorkbookPath = UsageLogPath + filename + "_" + Time + ".xlsx";
+
+            File.Copy(UsageLogsTemplatePath, currentWorkbookPath);
+
+            //Below scripts adds an instance instead of opening the template
+            excelWorkBook = excelApplication.Workbooks.Open(currentWorkbookPath);
+            excelApplication.Visible = false;
+            excelApplication.DisplayAlerts = false;
+
+
+            
+            using (SqlConnection con = new SqlConnection(ProdConn))
+                {
+                    string completeLogQuery = "EXEC AOA_UsageLogs";
+
+                    using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
+                    {
+                        con.Open();
+                        SqlDataAdapter da = new SqlDataAdapter(cmd);
+                        DataSet ds = new DataSet();
+                        da.Fill(ds);
+
+                        DataSet dsTemp =new DataSet();
+                        dsTemp.Tables.Add(ds.Tables[0].Copy() );
+                        
+                        Excelpaste(excelWorkBook.Worksheets, "Raw Data Logs", dsTemp, 2, 1);
+                        dsTemp.Clear();
+                        dsTemp.Tables.Add(ds.Tables[1].Copy());
+                        Excelpaste(excelWorkBook.Worksheets, "Usage Data Stats", dsTemp, 2, 1);
+                        dsTemp.Clear();
+                        dsTemp.Tables.Add(ds.Tables[2].Copy() );
+                        Excelpaste(excelWorkBook.Worksheets, "Usage Data Stats", dsTemp, 2, 5);
+                        dsTemp.Dispose();
+                        con.Close();
+                        excelWorkBook.Save();
+                    HttpContext.Current.Response.Clear();
+                    HttpContext.Current.Response.Buffer = true;
+                    HttpContext.Current.Response.Charset = "";
+                    HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    HttpContext.Current.Response.AddHeader("content-disposition", "attachment;filename=" +currentWorkbookPath);
+                    using (MemoryStream myMemoryStream = new MemoryStream())
+                    {
+                         excelWorkBook.SaveAs(myMemoryStream);
+                        myMemoryStream.WriteTo(HttpContext.Current.Response.OutputStream);
+                        HttpContext.Current.Response.Flush();
+                        HttpContext.Current.Response.End();
+                    }
+
+                    excelWorkBook.Close();
+                    excelApplication.Quit();
+
+                }
+            }
+
+            try
+            {
+                if (excelWorkBook != null)
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelWorkBook);
+                excelWorkBook = null;
+            }
+            catch (Exception)
+            {
+                excelWorkBook = null;
+            }
+            finally
+            {
+                GC.Collect();
+            }
+            Console.WriteLine("Clearing Excel");
+            try
+            {
+                if (excelApplication != null)
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApplication);
+                excelApplication = null;
+            }
+            catch (Exception)
+            {
+                excelApplication = null;
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+
+        public static void Excelpaste(xlNS.Sheets sheet1, string tabname, DataSet dset, int rowstartposition, int ColumnStartposition)
+        {
+            Microsoft.Office.Interop.Excel.Range range;
+            try
+            {
+                System.Data.DataTable dtable = dset.Tables[0];
+                ADODB.Recordset rs;
+                xlNS.Worksheet targetSheet = null;
+                rs = ConvertToRecordset(dtable);
+
+                targetSheet = (Microsoft.Office.Interop.Excel.Worksheet)sheet1.get_Item(tabname);
+                range = (xlNS.Range)targetSheet.Cells[rowstartposition, ColumnStartposition];
+                range.CopyFromRecordset(rs, dtable.Rows.Count, dtable.Columns.Count);
+                //Console.WriteLine(tabname+ "ran");  
+
+                try
+                {
+                    if (targetSheet != null)
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(targetSheet);
+                    targetSheet = null;
+                }
+                catch (Exception)
+                {
+                    targetSheet = null;
+                }
+                finally
+                {
+                    GC.Collect();
+                }
+
+
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine(Ex);
+            }
+            finally
+            {
+                range = null;
+            }
+
+        }
+
+        public static ADODB.Recordset ConvertToRecordset(DataTable inTable)
+        {
+            ADODB.Recordset result = new ADODB.Recordset();
+            result.CursorLocation = ADODB.CursorLocationEnum.adUseClient;
+
+            ADODB.Fields resultFields = result.Fields;
+            System.Data.DataColumnCollection inColumns = inTable.Columns;
+
+            foreach (DataColumn inColumn in inColumns)
+            {
+
+                resultFields.Append(inColumn.ColumnName
+                    , TranslateType(inColumn.DataType)
+                    , inColumn.MaxLength
+                    , inColumn.AllowDBNull ? ADODB.FieldAttributeEnum.adFldIsNullable :
+                                             ADODB.FieldAttributeEnum.adFldUnspecified
+                    , null);
+            }
+
+            result.Open(System.Reflection.Missing.Value
+                    , System.Reflection.Missing.Value
+                    , ADODB.CursorTypeEnum.adOpenStatic
+                    , ADODB.LockTypeEnum.adLockOptimistic, 0);
+
+            foreach (DataRow dr in inTable.Rows)
+            {
+                result.AddNew(System.Reflection.Missing.Value,
+                              System.Reflection.Missing.Value);
+
+                for (int columnIndex = 0; columnIndex < inColumns.Count; columnIndex++)
+                {
+                    resultFields[columnIndex].Value = dr[columnIndex];
+                }
+            }
+
+            return result;
+        }
+
+        //To handle the datatype during conversion of dataset into recordset
+        static ADODB.DataTypeEnum TranslateType(Type columnType)
+        {
+            switch (columnType.UnderlyingSystemType.ToString())
+            {
+                case "System.Boolean":
+                    return ADODB.DataTypeEnum.adBoolean;
+
+                case "System.Byte":
+                    return ADODB.DataTypeEnum.adUnsignedTinyInt;
+
+                case "System.Char":
+                    return ADODB.DataTypeEnum.adChar;
+
+                case "System.DateTime":
+                    return ADODB.DataTypeEnum.adDate;
+
+                case "System.Decimal":
+                    return ADODB.DataTypeEnum.adCurrency;
+
+                case "System.Double":
+                    return ADODB.DataTypeEnum.adDouble;
+
+                case "System.Int16":
+                    return ADODB.DataTypeEnum.adSmallInt;
+
+                case "System.Int32":
+                    return ADODB.DataTypeEnum.adInteger;
+
+                case "System.Int64":
+                    return ADODB.DataTypeEnum.adBigInt;
+
+                case "System.SByte":
+                    return ADODB.DataTypeEnum.adTinyInt;
+
+                case "System.Single":
+                    return ADODB.DataTypeEnum.adSingle;
+
+                case "System.UInt16":
+                    return ADODB.DataTypeEnum.adUnsignedSmallInt;
+
+                case "System.UInt32":
+                    return ADODB.DataTypeEnum.adUnsignedInt;
+
+                case "System.UInt64":
+                    return ADODB.DataTypeEnum.adUnsignedBigInt;
+
+                case "System.String":
+                default:
+                    return ADODB.DataTypeEnum.adVarChar;
+            }
+        }
+
+
+
 
         [WebMethod]
         [ScriptMethod(UseHttpGet = true)]

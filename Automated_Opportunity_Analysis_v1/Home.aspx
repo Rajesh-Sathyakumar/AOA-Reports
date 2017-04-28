@@ -18,7 +18,7 @@
             <script src="Scripts/handlebars-v1.3.0.js"></script>
             <script src="crux/js/widgets/cs.popover.js"></script>
             <script src="jquery-growl-master/javascripts/jquery.growl.js"></script>
-            <script src="Scripts/Home.js"></script>
+            <script src="Scripts/Home-2.1.js"></script>
 </head>
 
 <body>
@@ -57,10 +57,13 @@
         <nav id="nav">
             <div class="container">
                 <div class="row">
-                    <div class="col12">
+                    <div class="col8">
                         <ul class="primary">
                             <li id="nav-PDA" class="no-menu current"><a href="#">Readmission Analytics </a></li>
                         </ul>
+                    </div>
+                    <div class="col4">
+                        <button type="button">Download Usage Logs</button>
                     </div>
                 </div>
             </div>
@@ -70,9 +73,10 @@
     <div id="body">
         <form id="DARA" runat="server">
             <div class="container">
-                <h1 id="page_title" data-nav="Components">Readmissions OA Lightning Deck</h1>
-               
-                <br />
+                <div class="col8">
+                    <h1 id="page_title" data-nav="Components">Readmissions OA Lightning Deck</h1>
+                </div>
+                <br/>
 
                 <div class="loading" id="LoadingScreen" runat="server" style="display: none;">
                     <div class="spinner" id="spin" runat="server"></div>
