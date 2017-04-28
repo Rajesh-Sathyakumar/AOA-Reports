@@ -24,12 +24,12 @@ namespace DAReportsAutomation
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
-            {
-                userEmail = "sathyakr@advisory.com",
-                userName = "Rajesh"
-            });
-            return;
+            //HttpContext.Current.Session.Add("UserSessionInfo", new UserSessionInfo()
+            //{
+            //    userEmail = "sathyakr@advisory.com",
+            //    userName = "Rajesh"
+            //});
+            //return;
 
             var cas = new CasAuthenticationService(SamlHelperConfiguration.Config, UserSessionHandler.Get());
 
