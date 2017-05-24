@@ -13,13 +13,22 @@ namespace DAReportsAutomation {
     public partial class Home {
         
         /// <summary>
-        /// DARA control.
+        /// downloadLogs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm DARA;
+        protected global::System.Web.UI.HtmlControls.HtmlForm downloadLogs;
+        
+        /// <summary>
+        /// downloadLogsBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button downloadLogsBtn;
         
         /// <summary>
         /// LoadingScreen control.

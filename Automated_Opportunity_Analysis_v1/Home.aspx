@@ -63,7 +63,9 @@
                         </ul>
                     </div>
                     <div class="col4">
-                        <button type="button">Download Usage Logs</button>
+                        <form id="downloadLogs" runat="server">
+                            <asp:button type="button" id="downloadLogsBtn" OnClick="Button1_Click" runat="server" Text="Download Usage Logs" />
+                        </form>
                     </div>
                 </div>
             </div>
@@ -71,7 +73,7 @@
     </header>
 
     <div id="body">
-        <form id="DARA" runat="server">
+        <form id="DARA">
             <div class="container">
                 <div class="col8">
                     <h1 id="page_title" data-nav="Components">Readmissions OA Lightning Deck</h1>

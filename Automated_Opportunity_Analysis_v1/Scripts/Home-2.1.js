@@ -331,4 +331,23 @@ $(function () {
             window.location.replace("http://atxcccwapp-s02/Home.aspx");
         });
 
-    });
+        $('#downloadLogs').click(function () {
+
+            $('.loading').show();
+        
+            $.ajax({
+                type: "GET",
+                url: serverURL + "Home.aspx/DownloadUsageLogs",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                    document.getElementById("username").innerHTML = JSON.parse(response.d);
+                    $('.loading').hide();
+                },
+                error: function (data, success, error) {
+                    //console.log(error);
+                    $('.loading').hide();
+                }});
+            });
+
+});

@@ -54,106 +54,6 @@ namespace DAReportsAutomation
             }
         }
 
-        [WebMethod]
-        [ScriptMethod(UseHttpGet = true)]
-        public static void DownloadUsageLogs()
-        {
-            xlNS.Application excelApplication = null;
-            xlNS.Workbook excelWorkBook = null;
-            excelApplication = new xlNS.Application();
-
-            DateTime date = new DateTime();
-            string Time = DateTime.Now.ToString("ddMMMyyyy.hh.m.s tt");
-
-            string UsageLogsTemplatePath = ConfigurationManager.AppSettings["UsageLogsTemplatePath"];
-            string UsageLogPath = ConfigurationManager.AppSettings["UsageLogPath"];
-            string filename = "AOA_UsageLogs";
-
-            string currentWorkbookPath = UsageLogPath + filename + "_" + Time + ".xlsx";
-
-            File.Copy(UsageLogsTemplatePath, currentWorkbookPath);
-
-            //Below scripts adds an instance instead of opening the template
-            excelWorkBook = excelApplication.Workbooks.Open(currentWorkbookPath);
-            excelApplication.Visible = false;
-            excelApplication.DisplayAlerts = false;
-
-
-            
-            using (SqlConnection con = new SqlConnection(ProdConn))
-                {
-                    string completeLogQuery = "EXEC AOA_UsageLogs";
-
-                    using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
-                    {
-                        con.Open();
-                        SqlDataAdapter da = new SqlDataAdapter(cmd);
-                        DataSet ds = new DataSet();
-                        da.Fill(ds);
-
-                        DataSet dsTemp =new DataSet();
-                        dsTemp.Tables.Add(ds.Tables[0].Copy() );
-                        
-                        Excelpaste(excelWorkBook.Worksheets, "Raw Data Logs", dsTemp, 2, 1);
-                        dsTemp.Clear();
-                        dsTemp.Tables.Add(ds.Tables[1].Copy());
-                        Excelpaste(excelWorkBook.Worksheets, "Usage Data Stats", dsTemp, 2, 1);
-                        dsTemp.Clear();
-                        dsTemp.Tables.Add(ds.Tables[2].Copy() );
-                        Excelpaste(excelWorkBook.Worksheets, "Usage Data Stats", dsTemp, 2, 5);
-                        dsTemp.Dispose();
-                        con.Close();
-                        excelWorkBook.Save();
-                    HttpContext.Current.Response.Clear();
-                    HttpContext.Current.Response.Buffer = true;
-                    HttpContext.Current.Response.Charset = "";
-                    HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    HttpContext.Current.Response.AddHeader("content-disposition", "attachment;filename=" +currentWorkbookPath);
-                    using (MemoryStream myMemoryStream = new MemoryStream())
-                    {
-                         excelWorkBook.SaveAs(myMemoryStream);
-                        myMemoryStream.WriteTo(HttpContext.Current.Response.OutputStream);
-                        HttpContext.Current.Response.Flush();
-                        HttpContext.Current.Response.End();
-                    }
-
-                    excelWorkBook.Close();
-                    excelApplication.Quit();
-
-                }
-            }
-
-            try
-            {
-                if (excelWorkBook != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelWorkBook);
-                excelWorkBook = null;
-            }
-            catch (Exception)
-            {
-                excelWorkBook = null;
-            }
-            finally
-            {
-                GC.Collect();
-            }
-            Console.WriteLine("Clearing Excel");
-            try
-            {
-                if (excelApplication != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApplication);
-                excelApplication = null;
-            }
-            catch (Exception)
-            {
-                excelApplication = null;
-            }
-            finally
-            {
-                GC.Collect();
-            }
-        }
-
 
         public static void Excelpaste(xlNS.Sheets sheet1, string tabname, DataSet dset, int rowstartposition, int ColumnStartposition)
         {
@@ -551,5 +451,111 @@ namespace DAReportsAutomation
                 return "Test run fail";
             }
         }
+
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+
+            //xlNS.Application excelApplication = null;
+            //xlNS.Workbook excelWorkBook = null;
+            //excelApplication = new xlNS.Application();
+
+            //DateTime date = new DateTime();
+            //string Time = DateTime.Now.ToString("ddMMMyyyy.hh.m.s tt");
+
+            //string UsageLogsTemplatePath = ConfigurationManager.AppSettings["UsageLogsTemplatePath"];
+            //string UsageLogPath = ConfigurationManager.AppSettings["UsageLogPath"];
+            //string filename = "AOA_UsageLogs";
+
+            //string currentWorkbookPath = UsageLogPath + filename + "_" + Time + ".xlsx";
+
+            //File.Copy(UsageLogsTemplatePath, currentWorkbookPath);
+
+            ////Below scripts adds an instance instead of opening the template
+            //excelWorkBook = excelApplication.Workbooks.Open(currentWorkbookPath);
+            //excelApplication.Visible = false;
+            //excelApplication.DisplayAlerts = false;
+
+
+
+            //using (SqlConnection con = new SqlConnection(ProdConn))
+            //{
+            //    string completeLogQuery = "EXEC AOA_UsageLogs";
+
+            //    using (SqlCommand cmd = new SqlCommand(completeLogQuery, con))
+            //    {
+            //        con.Open();
+            //        SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //        DataSet ds = new DataSet();
+            //        da.Fill(ds);
+
+            //        DataSet dsTemp = new DataSet();
+            //        dsTemp.Tables.Add(ds.Tables[0].Copy());
+
+            //        Excelpaste(excelWorkBook.Worksheets, "Raw Data Logs", dsTemp, 2, 1);
+            //        dsTemp.Clear();
+            //        dsTemp.Tables.Add(ds.Tables[1].Copy());
+            //        Excelpaste(excelWorkBook.Worksheets, "Usage Data Stats", dsTemp, 2, 1);
+            //        dsTemp.Clear();
+            //        dsTemp.Tables.Add(ds.Tables[2].Copy());
+            //        Excelpaste(excelWorkBook.Worksheets, "Usage Data Stats", dsTemp, 2, 5);
+            //        dsTemp.Dispose();
+            //        con.Close();
+
+                    HttpContext.Current.Response.Clear();
+                    HttpContext.Current.Response.Buffer = true;
+                    HttpContext.Current.Response.Charset = "";
+                    HttpContext.Current.Response.ContentType = "application/vnd.ms-excel";
+                    HttpContext.Current.Response.AddHeader("content-disposition", "attachment;filename=AOA_UsageLogs.xlsx");
+                    using (MemoryStream myMemoryStream = new MemoryStream())
+                    {
+                        //excelWorkBook.SaveAs(myMemoryStream);
+                        //HttpContext.Current.Response.TransmitFile();
+                        myMemoryStream.WriteTo(HttpContext.Current.Response.OutputStream);
+
+                    }
+
+                    //excelWorkBook.Save();
+                    //excelWorkBook.Close();
+                    //excelApplication.Quit();
+                    HttpContext.Current.Response.TransmitFile("AOA_UsageLogs.xlsx");
+                }
+            //}
+
+            //try
+            //{
+            //    if (excelWorkBook != null)
+            //        System.Runtime.InteropServices.Marshal.ReleaseComObject(excelWorkBook);
+            //    excelWorkBook = null;
+            //}
+            //catch (Exception)
+            //{
+            //    excelWorkBook = null;
+            //}
+            //finally
+            //{
+            //    GC.Collect();
+            //}
+            //Console.WriteLine("Clearing Excel");
+            //try
+            //{
+            //    if (excelApplication != null)
+            //        System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApplication);
+            //    excelApplication = null;
+            //}
+            //catch (Exception)
+            //{
+            //    excelApplication = null;
+            //}
+            //finally
+            //{
+            //    GC.Collect();
+            //}
+
+            //HttpContext.Current.Response.Flush();
+            //HttpContext.Current.Response.End();
+
+
+       // }
     }
 }
